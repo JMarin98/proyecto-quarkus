@@ -18,7 +18,11 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
+import org.json.JSONObject;
+import org.json.XML;
 
 @ApplicationScoped
 public class ProcessResourceServiceImpl implements ProcessResourceService {
@@ -30,15 +34,23 @@ public class ProcessResourceServiceImpl implements ProcessResourceService {
 
         if (template == null) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    // .entity(Map.of("error", "Convenio no válido"))
+                    //.entity(Map.of("error", "Convenio no válido"))
                     .entity("<error>Convenio no válido</error>")
                     .build();
         }
 
         try {
             String xmlProcesado = generarXML(request, template);
-            return Response.ok(xmlProcesado).build();
-            // return Response.ok(Map.of("xml", xmlProcesado)).build();
+
+            if ("json".equalsIgnoreCase(request.getTipo())) {
+                JSONObject json = XML.toJSONObject(xmlProcesado);
+                // Extrae solo el contenido de root
+                JSONObject sinRoot = json.optJSONObject("root"); 
+                return Response.ok(sinRoot != null ? sinRoot.toString(4) : json.toString(4)).build();
+            }                
+                return Response.ok(xmlProcesado).build();
+                // return Response.ok(Map.of("xml", xmlProcesado)).build();               
+
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("<error>Error procesando XML</error>")
@@ -76,11 +88,11 @@ public class ProcessResourceServiceImpl implements ProcessResourceService {
             // verifica que se procesen nodos XML
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 // Obtiene el valor original de la plantilla (canalA, canalB)
-                String nodeName = node.getTextContent(); 
-                // Mapea el valor real desde DTO y se obtiene el valor del nodo, 
+                String nodeName = node.getTextContent();
+                // Mapea el valor real desde DTO y se obtiene el valor del nodo,
                 String value = obtenerValorDesdeDTO(nodeName, data);
                 // Asigna el valor correcto
-                node.setTextContent(value != null ? value : null); 
+                node.setTextContent(value != null ? value : null);
             }
         }
 

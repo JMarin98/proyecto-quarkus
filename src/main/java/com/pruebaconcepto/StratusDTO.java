@@ -16,6 +16,7 @@ public class StratusDTO {
     public String canalD;
     public String canalE;
     public String convenio;
+    private String tipo;
 
     // Constructor
     public StratusDTO() {
@@ -45,6 +46,10 @@ public class StratusDTO {
         return convenio;
     }
 
+    public String getTipo() {
+        return tipo;
+    }
+
     public void setCanalA(String canalA) {
         this.canalA = canalA;
     }
@@ -67,6 +72,10 @@ public class StratusDTO {
 
     public void setConvenio(String convenio) {
         this.convenio = convenio;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
 }

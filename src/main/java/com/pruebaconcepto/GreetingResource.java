@@ -20,7 +20,7 @@ public class GreetingResource {
 
      @POST
      @Consumes(MediaType.APPLICATION_JSON)
-     @Produces(MediaType.APPLICATION_XML)
+     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response procesarEntrada(StratusDTO request) {
         System.out.println("Request recibido: " + request);
 
